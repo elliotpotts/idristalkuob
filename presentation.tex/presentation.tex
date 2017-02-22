@@ -1,0 +1,149 @@
+\documentclass[xetex,xcolor={usenames,dvipsnames},mathserif,serif,17pt]{beamer}
+\usepackage{fontspec}
+\usepackage{fancyvrb}
+\usepackage{listings}
+
+\usetheme{Madrid}
+
+\newcommand{\IdrisData}[1]{\textcolor{red}{#1}}
+\newcommand{\IdrisType}[1]{\textcolor{blue}{#1}}
+\newcommand{\IdrisBound}[1]{\textcolor{violet}{#1}}
+\newcommand{\IdrisFunction}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\IdrisKeyword}[1]{{\underline{#1}}}
+\newcommand{\IdrisImplicit}[1]{{\itshape \IdrisBound{#1}}}
+
+%% \setmonofont{CMU Typewriter Text}[Scale=0.5]
+
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+}
+
+\begin{document}
+\title{Interactive Programming with Idris}
+\author{Elliot Potts}
+\frame{\titlepage}
+\begin{frame}
+  \frametitle{What is Idris?}
+  \begin{itemize}
+  \item General purpose
+  \item Purely functional
+  \item Eagerly evaluated
+  \item Dependently typed
+  \end{itemize}
+\end{frame}
+
+\fontsize{11}{11}\selectfont
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisKeyword{data} \IdrisType{List} : \IdrisType{Type} -> \IdrisType{Type} \IdrisKeyword{where}
+  \IdrisData{Nil} : \IdrisType{List} \IdrisImplicit{elem}
+  \IdrisData{(::)} : \IdrisImplicit{elem} -> \IdrisType{List} \IdrisImplicit{elem} -> \IdrisType{List} \IdrisImplicit{elem}
+\end{Verbatim}
+\begin{lstlisting}[language=haskell]
+data [a] = [] | a : [a]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Semantic Highlighting}
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisData{data}
+\IdrisType{type}
+\IdrisBound{bound variable}
+\IdrisFunction{function}
+\IdrisKeyword{keyword}
+\IdrisImplicit{implicit}
+\end{Verbatim}
+  \end{block}
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisKeyword{data} \IdrisType{List} : \IdrisType{Type} -> \IdrisType{Type} \IdrisKeyword{where}
+  \IdrisData{Nil} : \IdrisType{List} \IdrisImplicit{elem}
+  \IdrisData{(::)} : \IdrisImplicit{elem} -> \IdrisType{List} \IdrisImplicit{elem} -> \IdrisType{List} \IdrisImplicit{elem}
+\end{Verbatim}
+\begin{lstlisting}[language=haskell]
+data [a] = [] | a : [a]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisFunction{listsum} : \IdrisType{List} \IdrisType{Integer} -> \IdrisType{Integer}
+\IdrisFunction{listsum} \IdrisData{[]} = \IdrisData{0}
+\IdrisFunction{listsum} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) = \IdrisBound{x} \IdrisFunction{+} (\IdrisFunction{listsum} \IdrisBound{xs})
+
+\IdrisFunction{mean} : \IdrisType{List Integer} -> \IdrisType{Integer}
+\IdrisFunction{mean} \IdrisBound{xs} = (\IdrisFunction{listsum} \IdrisBound{xs}) \IdrisFunction{`div`} (\IdrisFunction{toIntegerNat} (\IdrisFunction{length} \IdrisBound{xs}))
+
+\IdrisFunction{main} : \IdrisType{IO ()}
+\IdrisFunction{main} = \IdrisKeyword{do} \IdrisFunction{putStrLn} (\IdrisFunction{show} (\IdrisFunction{mean} \IdrisData{[1,2,3]}))
+          \IdrisFunction{putStrLn} (\IdrisFunction{show} (\IdrisFunction{mean} \IdrisData{[1,1,1]}))
+          \IdrisFunction{putStrLn} (\IdrisFunction{show} (\IdrisFunction{mean} \IdrisData{[]}))
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisKeyword{data} \IdrisData{Nat} : \IdrisType{Type} : \IdrisKeyword{where}
+  \IdrisData{Z} : \IdrisType{Nat}
+  \IdrisData{S} : \IdrisType{Nat} -> \IdrisType{Nat}
+
+  
+\IdrisKeyword{data} \IdrisType{Vect} : \IdrisType{Nat} -> \IdrisType{Type} -> \IdrisType{Type} \IdrisKeyword{where}
+  \IdrisData{Nil} : \IdrisType{Vect} \IdrisData{0} \IdrisImplicit{elem}
+  \IdrisData{(::)} : \IdrisImplicit{elem} -> \IdrisType{Vect} \IdrisImplicit{len} \IdrisImplicit{elem} -> \IdrisType{Vect} (\IdrisData{S} \IdrisImplicit{len}) \IdrisImplicit{elem}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{Verbatim}[commandchars=\\\{\}]
+\IdrisFunction{vectsum} : \IdrisType{Vect }\IdrisBound{k} \IdrisType{Integer} -> \IdrisType{Integer}
+\IdrisFunction{vectsum} \IdrisData{[]} = \IdrisData{0}
+\IdrisFunction{vectsum} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) = \IdrisBound{x} \IdrisFunction{+} (\IdrisFunction{vectsum} \IdrisBound{xs})
+
+\IdrisFunction{mean} : \IdrisType{Vect }(\IdrisData{S} \IdrisBound{k}) \IdrisType{Integer} -> \IdrisType{Integer}
+\IdrisFunction{mean} \IdrisBound{xs} = (\IdrisFunction{vectsum} \IdrisBound{xs}) \IdrisFunction{`div`} (\IdrisFunction{toIntegerNat} (\IdrisFunction{length} \IdrisBound{xs}))
+
+\IdrisFunction{main} : \IdrisFunction{IO} \IdrisType{()}
+\IdrisFunction{main} = \IdrisFunction{putStrLn} (\IdrisFunction{show} (\IdrisFunction{mean} \IdrisData{[1,2,3]}))
+       \IdrisFunction{putStrLn} (\IdrisFunction{show} (\IdrisFunction{mean} \IdrisData{[1,1,1]}))
+       \IdrisFunction{putStrLn} (\IdrisFunction{show} (\IdrisFunction{mean} \IdrisData{[]}))
+  \end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisFunction{zip} : (\IdrisBound{a} -> \IdrisBound{b} -> \IdrisBound{c}) -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{a} -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{b} -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{c}
+\IdrisFunction{zip} \IdrisBound{f} \IdrisData{[]} \IdrisData{[]} = \IdrisData{[]}
+\IdrisFunction{zip} \IdrisBound{f} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) (\IdrisBound{y} \IdrisData{::} \IdrisBound{ys}) = \IdrisBound{f} \IdrisBound{x} \IdrisBound{y} \IdrisData{::} \IdrisFunction{zip} \IdrisBound{f} \IdrisBound{xs} \IdrisBound{ys}
+
+\IdrisFunction{mapvect} : (\IdrisImplicit{a} -> \IdrisImplicit{b}) -> \IdrisType{Vect} \IdrisImplicit{k} \IdrisImplicit{a} -> \IdrisType{Vect} \IdrisImplicit{k} \IdrisImplicit{b}
+\IdrisFunction{mapvect} \IdrisBound{f} \IdrisData{[]} = \IdrisData{[]}
+\IdrisFunction{mapvect} \IdrisBound{f} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) = \IdrisBound{f} \IdrisBound{x} \IdrisData{::} \IdrisFunction{mapvect} \IdrisBound{f} \IdrisBound{xs}
+
+\IdrisFunction{append} : \IdrisType{Vect} \IdrisImplicit{n} \IdrisImplicit{a} -> \IdrisType{Vect} \IdrisImplicit{m} \IdrisImplicit{a} -> \IdrisType{Vect} (\IdrisImplicit{n} \IdrisFunction{+} \IdrisImplicit{m}) \IdrisImplicit{a}
+\IdrisFunction{append} \IdrisData{[]} \IdrisBound{ys} = \IdrisBound{ys}
+\IdrisFunction{append} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) \IdrisBound{ys} = \IdrisBound{x} \IdrisData{::} \IdrisFunction{append} \IdrisBound{xs} \IdrisBound{ys}
+\end{Verbatim}
+\end{frame}
+
+\fontsize{24}{24}\selectfont
+
+\begin{frame}
+  \begin{itemize}
+  \item $\exists (w \in A). P(w)$
+  \item $\Sigma_{(w:A)} P(w)$
+  \item \lstinline{(w : A ** pf : P w)}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+  \item $\forall (w \in A). P(w)$
+  \item $\Pi_{(w:A)} P(w)$
+  \item \lstinline{(w : A) -> P w}
+  \end{itemize}
+\end{frame}
+
+\end{document}
