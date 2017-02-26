@@ -1,23 +1,27 @@
 import Data.Vect
 
-readVect : IO (len ** Vect len String)
-readVect = do s <- getLine
-              case trim s of
-                "" => pure (_ ** [])
-                x => do (_ ** xs) <- readVect
-                        pure (_ ** x :: xs)
+readSomeWords : IO (len ** Vect len String)
+readSomeWords =
+  do s <- getLine
+     case trim s of
+       "" => pure (0 ** [])
+       x => do (lenMinus1 ** xs) <- readSomeWords
+               pure (S lenMinus1 ** x :: xs)
 
-putFullNames : Vect k (String, String) -> IO ()
-putFullNames [] = pure ()
-putFullNames (x :: xs) = do putStrLn (show x)
-                            putFullNames xs
+readAllWords : (len : Nat) -> IO (Vect len String)
+readAllWords Z = pure []
+readAllWords (S k) = do s <- getLine
+                        case trim s of
+                          "" => do putStrLn $ "Please input " ++ (show (S k)) ++ " more words."
+                                   readAllWords (S k)
+                          x => do xs <- readAllWords k
+                                  pure (x :: xs)
 
 main : IO ()
-main = do putStrLn "Enter first names"
-          (len_a ** first_names) <- readVect
-          putStrLn "Enter the last names"
-          (len_b ** last_names) <- readVect
-          (case decEq len_a len_b of
-                (Yes Refl) => putFullNames (zip first_names last_names)
-                (No contra) => do putStrLn "Please enter the same number of first names and last names"
-                                  main)
+main = do putStrLn "Input first names, leaving a blank line to finish"
+          (n ** firstNames) <- readSomeWords
+          putStrLn ("Now input " ++ (show n) ++ " last names")
+          lastNames <- readAllWords n
+          putStrLn ("Your full names are: ")
+          let fullNames = zip firstNames lastNames
+          putStrLn (show fullNames)

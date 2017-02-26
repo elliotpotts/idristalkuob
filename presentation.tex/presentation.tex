@@ -114,13 +114,13 @@ data [a] = [] | a : [a]
 
 \begin{frame}[fragile]
 \begin{Verbatim}[commandchars=\\\{\}]
-\IdrisFunction{zip} : (\IdrisBound{a} -> \IdrisBound{b} -> \IdrisBound{c}) -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{a} -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{b} -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{c}
-\IdrisFunction{zip} \IdrisBound{f} \IdrisData{[]} \IdrisData{[]} = \IdrisData{[]}
-\IdrisFunction{zip} \IdrisBound{f} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) (\IdrisBound{y} \IdrisData{::} \IdrisBound{ys}) = \IdrisBound{f} \IdrisBound{x} \IdrisBound{y} \IdrisData{::} \IdrisFunction{zip} \IdrisBound{f} \IdrisBound{xs} \IdrisBound{ys}
+\IdrisFunction{myZipWith} : (\IdrisBound{a} -> \IdrisBound{b} -> \IdrisBound{c}) -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{a} -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{b} -> \IdrisType{Vect} \IdrisBound{k} \IdrisBound{c}
+\IdrisFunction{myZipWith} \IdrisBound{f} \IdrisData{[]} \IdrisData{[]} = \IdrisData{[]}
+\IdrisFunction{myZipWith} \IdrisBound{f} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) (\IdrisBound{y} \IdrisData{::} \IdrisBound{ys}) = \IdrisBound{f} \IdrisBound{x} \IdrisBound{y} \IdrisData{::} \IdrisFunction{myZipWith} \IdrisBound{f} \IdrisBound{xs} \IdrisBound{ys}
 
-\IdrisFunction{mapvect} : (\IdrisImplicit{a} -> \IdrisImplicit{b}) -> \IdrisType{Vect} \IdrisImplicit{k} \IdrisImplicit{a} -> \IdrisType{Vect} \IdrisImplicit{k} \IdrisImplicit{b}
-\IdrisFunction{mapvect} \IdrisBound{f} \IdrisData{[]} = \IdrisData{[]}
-\IdrisFunction{mapvect} \IdrisBound{f} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) = \IdrisBound{f} \IdrisBound{x} \IdrisData{::} \IdrisFunction{mapvect} \IdrisBound{f} \IdrisBound{xs}
+\IdrisFunction{myMap} : (\IdrisImplicit{a} -> \IdrisImplicit{b}) -> \IdrisType{Vect} \IdrisImplicit{k} \IdrisImplicit{a} -> \IdrisType{Vect} \IdrisImplicit{k} \IdrisImplicit{b}
+\IdrisFunction{myMap} \IdrisBound{f} \IdrisData{[]} = \IdrisData{[]}
+\IdrisFunction{myMap} \IdrisBound{f} (\IdrisBound{x} \IdrisData{::} \IdrisBound{xs}) = \IdrisBound{f} \IdrisBound{x} \IdrisData{::} \IdrisFunction{myMap} \IdrisBound{f} \IdrisBound{xs}
 
 \IdrisFunction{append} : \IdrisType{Vect} \IdrisImplicit{n} \IdrisImplicit{a} -> \IdrisType{Vect} \IdrisImplicit{m} \IdrisImplicit{a} -> \IdrisType{Vect} (\IdrisImplicit{n} \IdrisFunction{+} \IdrisImplicit{m}) \IdrisImplicit{a}
 \IdrisFunction{append} \IdrisData{[]} \IdrisBound{ys} = \IdrisBound{ys}
@@ -128,21 +128,36 @@ data [a] = [] | a : [a]
 \end{Verbatim}
 \end{frame}
 
-\fontsize{24}{24}\selectfont
-
-\begin{frame}
-  \begin{itemize}
-  \item $\exists (w \in A). P(w)$
-  \item $\Sigma_{(w:A)} P(w)$
-  \item \lstinline{(w : A ** pf : P w)}
-  \end{itemize}
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisFunction{readAllWords} : (\IdrisBound{len} : \IdrisType{Nat}) -> \IdrisFunction{IO} (\IdrisType{Vect} \IdrisBound{len} \IdrisType{String})
+\IdrisFunction{readAllWords} \IdrisData{0} = \IdrisFunction{pure} \IdrisData{[]}
+\IdrisFunction{readAllWords} (\IdrisData{S} \IdrisBound{k}) =
+  \IdrisKeyword{do} \IdrisBound{s} <- \IdrisFunction{getLine}
+    \IdrisKeyword{case} \IdrisFunction{trim} \IdrisBound{s} \IdrisKeyword{of}
+      \IdrisData{""} => \IdrisKeyword{do} \IdrisFunction{putStrLn} (\IdrisData{"Please input "} \IdrisFunction{++} (\IdrisFunction{show} (\IdrisData{S} \IdrisBound{k})) \IdrisFunction{++}
+               \IdrisData{" more words."})
+               \IdrisFunction{readAllWords} (\IdrisData{S} \IdrisBound{k})
+      \IdrisBound{x} => \IdrisBound{xs} <- \IdrisFunction{readAllWords} \IdrisBound{k}
+           \IdrisFunction{pure} (\IdrisBound{x} \IdrisFunction{::} \IdrisBound{xs})
+\end{Verbatim}
 \end{frame}
+
+\fontsize{24}{24}\selectfont
 
 \begin{frame}
   \begin{itemize}
   \item $\forall (w \in A). P(w)$
   \item $\Pi_{(w:A)} P(w)$
   \item \lstinline{(w : A) -> P w}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+  \item $\exists (w \in A). P(w)$
+  \item $\Sigma_{(w:A)} P(w)$
+  \item \lstinline{(w : A ** pf : P w)}
   \end{itemize}
 \end{frame}
 
