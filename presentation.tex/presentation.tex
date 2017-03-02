@@ -161,4 +161,34 @@ data [a] = [] | a : [a]
   \end{itemize}
 \end{frame}
 
+\fontsize{11}{11}\selectfont
+
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisFunction{readSomeWords} : \IdrisFunction{IO} \IdrisType{(}\IdrisBound{len} : \IdrisType{Nat} \IdrisType{**}  \IdrisType{Vect} \IdrisBound{len} \IdrisType{String}\IdrisType{)}
+\IdrisFunction{readSomeWords} = \IdrisKeyword{do} \IdrisFunction{getLine}
+  \IdrisKeyword{case} \IdrisFunction{trim} \IdrisBound{s} \IdrisKeyword{of}
+    "" => \IdrisFunction{pure} \IdrisData{(0} \IdrisData{**} \IdrisData{[]}\IdrisData{)}
+     x => \IdrisKeyword{do} \IdrisData{(}\IdrisBound{predLen} \IdrisData{**} \IdrisBound{xs}\IdrisData{)} <- \IdrisFunction{readSomeWords}
+              \IdrisFunction{pure} \IdrisData{(}\IdrisData{S} \IdrisBound{predLen} \IdrisData{**} x \IdrisData{::} \IdrisBound{xs}\IdrisData{)}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{Verbatim}[commandchars=\\\{\}]
+\IdrisFunction{joinWithSpace} : \IdrisType{String} -> \IdrisType{String} -> \IdrisType{String}
+\IdrisFunction{joinWithSpace} \IdrisBound{a} \IdrisBound{b} = \IdrisBound{a} \IdrisFunction{++} \IdrisData{" "} \IdrisFunction{++} \IdrisBound{b}
+
+\IdrisFunction{main} : \IdrisFunction{IO} \IdrisType{()}
+\IdrisFunction{main} = \IdrisKeyword{do}
+  \IdrisFunction{putStrLn} \IdrisData{"Input first names, leave a blank line to finish"}
+  \IdrisData{(}\IdrisBound{n} \IdrisData{**} \IdrisBound{firstNames}\IdrisData{)} <- \IdrisFunction{readSomeWords}
+  \IdrisFunction{putStrLn} (\IdrisData{"Now input "} \IdrisFunction{++} (\IdrisFunction{show}\IdrisBound{n}) \IdrisFunction{++} \IdrisData{" last names"})
+  \IdrisBound{lastNames} <- \IdrisFunction{readAllWords} \IdrisBound{n}
+  \IdrisFunction{putStrLn} \IdrisData{"Your full names are: "} \IdrisFunction{>>=}
+  \IdrisKeyword{let} \IdrisBound{fullNames} = \IdrisFunction{zipWith} \IdrisFunction{joinWithSpace} \IdrisBound{firstNames} \IdrisBound{lastNames}
+  \IdrisFunction{putStrLn} (\IdrisFunction{show} \IdrisBound{fullNames})
+\end{Verbatim}
+\end{frame}
+
 \end{document}
